@@ -27,6 +27,20 @@ const TURNSTILE_SITE_KEY = "";
   // Stamp the load time (bot-speed guard on the spine rejects sub-3s posts).
   if (loadedAtField) loadedAtField.value = new Date().toISOString();
 
+  // Division preselect from the referring splash (?division=engr|metr|pca-fca).
+  // The client can change it; it just starts on the division they came from.
+  const DIVISION_PARAM_MAP = {
+    "engr": "Forensic Engineering",
+    "metr": "Forensic Meteorology",
+    "pca-fca": "PCA/FCA"
+  };
+  const divisionSelect = document.getElementById("division");
+  if (divisionSelect) {
+    const requested = new URLSearchParams(window.location.search).get("division");
+    const mapped = requested && DIVISION_PARAM_MAP[requested.toLowerCase()];
+    if (mapped) divisionSelect.value = mapped;
+  }
+
   // Render the Turnstile widget only when a site key is configured.
   let turnstileToken = "";
   if (TURNSTILE_SITE_KEY) {
@@ -82,6 +96,16 @@ const TURNSTILE_SITE_KEY = "";
       const v = (fd.get(name) || "").trim();
       if (v) payload[name] = v;
     });
+
+    // Division: sent as its own key (future spine contract field), and carried
+    // as a labeled first line of the description so it reaches the referral
+    // record under the CURRENT contract. Remove the prefix line once the spine
+    // accepts `division` directly.
+    const division = (fd.get("division") || "").trim();
+    if (division) {
+      payload.division = division;
+      payload.description = "Division: " + division + "\n\n" + payload.description;
+    }
 
     submitBtn.disabled = true;
     showStatus("pending", "Sending your matter…");

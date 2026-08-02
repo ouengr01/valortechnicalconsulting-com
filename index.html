@@ -131,6 +131,25 @@ body {
     to { opacity: 1; transform: none; }
   }
 }
+
+/* Referral entry at the bottom (Chad 08.01): division preselects via query param. */
+.refer { margin: clamp(1.2rem, 4vmin, 2.2rem) 0 0; }
+.refer a {
+  display: inline-block;
+  padding: 0.65em 1.6em;
+  border: 2px solid var(--gold);
+  border-radius: 3px;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  font-size: clamp(0.78rem, 2.4vmin, 0.95rem);
+  color: var(--gold);
+  text-decoration: none;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.refer a:hover, .refer a:focus-visible { background: var(--gold); color: var(--field); }
 </style>
 </head>
 <body>
@@ -139,6 +158,7 @@ body {
   <h1 class="firm">Valor Technical Consulting</h1>
   <div class="rule"></div>
   <p class="soon">Coming Soon</p>
+  <p class="refer"><a href="submit-a-matter.html">Refer a New Matter</a></p>
 </main>
 </body>
 </html>
