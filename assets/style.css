@@ -1,0 +1,959 @@
+/* Repairability Assessment: scholarly explainer stylesheet */
+/* VTC token set. Gold is accent-only in light mode; gold links in dark mode. */
+
+:root {
+  color-scheme: light dark;
+  --ink: #111111;
+  --navy: #0F2452;
+  --gold: #FABF12;
+  --gold-dark: #C99B0E;
+  /* PCA/FCA division accent. White and green only: gold never appears in the
+     PCA/FCA identity. --green-light is the authored dark-mode pin, because the
+     deep green cannot be read against a dark surface. */
+  --green: #0C4613;
+  --green-dark: #093610;
+  --green-light: #6BBF7A;
+  --slate: #4B5563;
+  --hairline: #D1D5DB;
+  --cream: #FBF6E9;
+  --paper: #FFFFFF;
+  --maxw: 46rem;
+  /* Semantic tokens: light mode */
+  --page-bg: var(--cream);
+  --text: var(--ink);
+  --heading: var(--navy);
+  --link: var(--navy);
+  --muted: var(--slate);
+  --surface: var(--paper);
+  --line: var(--hairline);
+  --edge: var(--navy);
+  --focus: var(--navy);
+}
+
+/* Authored dark mode: controlled dark gray, never a browser inversion */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #1E1E1E;
+    --text: #E8E4DA;
+    --heading: #FBF6E9;
+    --link: #FABF12;
+    --muted: #B9B4A9;
+    --surface: #2A2A2A;
+    --line: #3F3F3F;
+    --edge: #FABF12;
+    --focus: #FABF12;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--navy);
+  color: #FFFFFF;
+  padding: 0.6rem 1rem;
+  z-index: 100;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* Focus visibility */
+a:focus-visible,
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Header: navy masthead ribbon with the eagle, per the document chrome.
+   Gold rule sits INSIDE the navy at ~75% of the band height, with empty
+   navy continuing below it (mirrors .body-hdr / .body-hdr-rule in V9). */
+.masthead {
+  background: var(--navy);
+  padding-bottom: 20px;
+}
+.masthead::after {
+  content: "";
+  display: block;
+  height: 4px;
+  background: var(--gold);
+}
+.site-title-wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+}
+.masthead-eagle {
+  width: 52px;
+  height: auto;
+  flex: 0 0 auto;
+}
+.site-title {
+  margin: 0;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream);
+  font-size: 1.5rem;
+  text-align: center;
+  text-wrap: balance;
+}
+/* Long-title variant: full paper title in one run, stepped down to hold two lines.
+   Wrap padding tightens so the two-line band matches the single-line band height. */
+.site-title--long {
+  font-size: 1.22rem;
+}
+.gold-band { display: none; } /* superseded: gold rule now lives inside the ribbons */
+
+/* Navigation */
+.site-nav {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem;
+}
+.site-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.site-nav li {
+  display: flex;
+  flex: 1;
+}
+.site-nav a {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+  color: var(--link);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(15, 36, 82, 0.12);
+  padding: 12px 8px;
+  text-decoration: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.18s ease;
+}
+.site-nav a:hover {
+  box-shadow: 0 4px 10px rgba(15, 36, 82, 0.22);
+  transform: translateY(-1px);
+}
+.site-nav a:hover::after {
+  transform: scaleX(1);
+}
+/* Active state covers both the exact page (aria-current="page") and the
+   division a sub-page sits inside (aria-current="true"). */
+.site-nav a[aria-current] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(0, 0, 0, 0.12)), var(--link);
+  border-color: var(--link);
+  color: var(--page-bg);
+  box-shadow: 0 2px 6px rgba(15, 36, 82, 0.28);
+}
+.site-nav a[aria-current]::after {
+  background: var(--gold);
+  transform: scaleX(1);
+}
+@media (max-width: 560px) {
+  .site-nav ul { flex-direction: column; }
+}
+
+/* Main */
+main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+h1 {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: var(--heading);
+  text-transform: uppercase;
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 1rem 0 0.75rem;
+}
+
+h2 {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: var(--heading);
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  line-height: 1.3;
+  margin: 2.25rem 0 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--gold);
+}
+
+p {
+  margin: 0 0 1.1rem;
+  text-align: justify;
+}
+
+.lead {
+  font-size: 1.15rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.byline {
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: -0.25rem 0 1.5rem;
+  line-height: 1.5;
+}
+
+/* Links in prose */
+main a {
+  color: var(--link);
+  text-decoration: underline;
+}
+main a:hover {
+  color: var(--link);
+  text-decoration-color: var(--gold-dark);
+  text-decoration-thickness: 2px;
+}
+
+/* Blockquotes for verbatim source quotes: Report of Findings treatment
+   (lifted field, gold rule on the right edge, italic justified text) */
+blockquote {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1.25rem;
+  border-right: 3px solid var(--gold);
+  background: var(--surface);
+}
+blockquote p {
+  font-style: italic;
+  margin: 0 0 0.5rem;
+}
+blockquote p:last-child { margin-bottom: 0; }
+blockquote .cite {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+
+/* Lists */
+ul.plain, ol.plain {
+  margin: 0 0 1.1rem;
+  padding-left: 1.4rem;
+}
+ul.plain li, ol.plain li {
+  margin-bottom: 0.5rem;
+}
+
+/* Definition-style linked entries (applications) */
+.applications {
+  margin: 0 0 1.1rem;
+  padding: 0;
+  list-style: none;
+}
+.applications li {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--edge);
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.85rem;
+}
+.applications a {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  color: var(--link);
+  text-decoration: underline;
+  font-size: 1.05rem;
+}
+.applications a:hover {
+  color: var(--link);
+  text-decoration-color: var(--gold-dark);
+  text-decoration-thickness: 2px;
+}
+.applications .desc {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* Reference / citation entries */
+.reference {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--edge);
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.25rem;
+}
+.reference .cite-text {
+  margin: 0 0 0.5rem;
+}
+.reference .doi {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Footer: navy ribbon bookend mirroring the masthead. Gold rule sits
+   INSIDE the navy, ~75% from the bottom (empty navy above it, text below),
+   per .body-ftr / .body-ftr .rule in V9. */
+.site-footer {
+  background: var(--navy);
+  padding-top: 20px;
+  margin-top: 2.5rem;
+}
+.site-footer::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: var(--gold);
+}
+.footer-rule { display: none; }
+.attribution {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.4rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.85rem;
+}
+.attribution img {
+  width: 52px;
+  height: auto;
+  flex: 0 0 auto;
+}
+.attribution .attr-text {
+  font-size: 0.9rem;
+  color: var(--cream);
+  line-height: 1.5;
+}
+.attribution .attr-text a {
+  color: var(--cream);
+  text-decoration: underline;
+}
+.attribution .attr-text a:hover {
+  color: var(--cream);
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 2px;
+}
+.attribution .copyright {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 480px) {
+  body { font-size: 17px; }
+  .site-title { font-size: 1.2rem; }
+  h1 { font-size: 1.65rem; }
+  h2 { font-size: 1.2rem; }
+  main { padding-left: 1rem; padding-right: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   VTC firm-site extensions (built on the fleet base above).
+   Token-based; gold-only accent; light + authored dark safe.
+   ============================================================ */
+
+/* Navy hero / navy bands: structural radial gradient + gold pinstripe,
+   per V9 brand (navy surfaces are never flat). */
+.hero {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.04) 0%, transparent 30%),
+    radial-gradient(circle at 80% 100%, rgba(250,191,18,0.08) 0%, transparent 40%),
+    var(--navy);
+  border-top: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+}
+.hero-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 2.75rem 1.25rem 2.5rem;
+  text-align: center;
+}
+.hero h1 {
+  color: var(--cream);
+  margin-top: 0;
+  /* Division names are spelled out in full, so a long heading wraps into
+     even lines rather than leaving a short orphan on the last line. */
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------------
+   A division titled in full is a two-part name joined by a colon. Both
+   parts are set as sibling blocks so the line always breaks AT the colon,
+   never mid-phrase: the parallel structure is the point of spelling it
+   out, and a colon stranded in the middle of a line destroys it. Type is
+   scaled to the viewport so each part holds a single line at every width
+   rather than wrapping again inside itself.
+   ------------------------------------------------------------------ */
+.title-spelled > span { display: block; }
+
+.hero h1.title-spelled {
+  font-size: clamp(0.85rem, 4.9vw, 2rem);
+}
+.hero .hero-subhead {
+  color: #E8E4DA;
+  font-size: 1.12rem;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* Primary button: gold fill, navy text (brand CTA). */
+.btn-primary {
+  display: inline-block;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  color: var(--navy);
+  background: var(--gold);
+  border: 1px solid var(--gold-dark);
+  border-radius: 3px;
+  padding: 0.85rem 1.6rem;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-primary:hover {
+  background: var(--gold-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.28);
+  text-decoration: none;
+}
+.cta-row {
+  margin: 1.75rem 0;
+  text-align: center;
+}
+
+/* Section eyebrow (uppercase label above section blocks). */
+.eyebrow {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: var(--muted);
+  margin: 0 0 0.35rem;
+}
+
+/* Card grid: services / three-up. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.25rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+.card {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  background: var(--surface);
+  padding: 1.1rem 1.15rem;
+}
+.card h3 {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--heading);
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+.card p { margin: 0 0 0.75rem; text-align: left; }
+.card a.card-link {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--link);
+  text-decoration: underline;
+}
+@media (max-width: 640px) {
+  .cards { grid-template-columns: 1fr; }
+}
+
+/* Numbered process / how-we-work steps. */
+ol.steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 1.25rem 0 1.5rem;
+  padding: 0;
+}
+ol.steps > li {
+  position: relative;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--edge);
+  background: var(--surface);
+  padding: 0.9rem 1.1rem 0.9rem 3.4rem;
+  margin-bottom: 0.85rem;
+}
+ol.steps > li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0.9rem;
+  top: 0.9rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  color: var(--navy);
+  background: var(--gold);
+  border-radius: 50%;
+}
+ol.steps > li strong { font-family: 'Trebuchet MS', Arial, sans-serif; }
+
+/* Team members. */
+.team { margin: 1.25rem 0 1.5rem; }
+.member {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--edge);
+  background: var(--surface);
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1.1rem;
+}
+.member h3 {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: var(--heading);
+  font-size: 1.1rem;
+  margin: 0 0 0.15rem;
+}
+.member .role {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+.member p:last-child { margin-bottom: 0; }
+
+/* Four-column client / applications grid. */
+.col-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.25rem 0 1.5rem;
+}
+.col-grid .col {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  background: var(--surface);
+  padding: 1rem 1.05rem;
+}
+.col-grid h3 {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--heading);
+  font-size: 0.92rem;
+  margin: 0 0 0.5rem;
+}
+.col-grid ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.95rem;
+}
+.col-grid li { margin-bottom: 0.3rem; color: var(--text); }
+@media (max-width: 860px) {
+  .col-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .col-grid { grid-template-columns: 1fr; }
+}
+
+/* FAQ (definition list). */
+.faq { margin: 1.25rem 0 1.5rem; }
+.faq dt {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  color: var(--heading);
+  font-size: 1.02rem;
+  margin: 1.1rem 0 0.35rem;
+}
+.faq dd { margin: 0 0 0.6rem; }
+
+/* Verify: navy-tinted inset panel with gold border + mono detail rows. */
+.verify-panel {
+  background: rgba(15, 36, 82, 0.04);
+  border: 1px solid rgba(250, 191, 18, 0.30);
+  border-radius: 4px;
+  padding: 1.25rem 1.4rem;
+  margin: 1.25rem 0 1.5rem;
+}
+.verify-badge {
+  display: inline-block;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  color: var(--navy);
+  background: var(--gold);
+  border-radius: 3px;
+  padding: 0.3rem 0.7rem;
+  margin-bottom: 0.6rem;
+}
+.verify-panel .detail-rows {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.9rem;
+}
+.verify-panel .detail-rows li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.verify-panel .detail-rows li:last-child { border-bottom: none; }
+
+/* Numbered flow strip (submit-a-matter explainer). */
+ol.flow-strip {
+  counter-reset: flow;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0 1.75rem;
+  padding: 0;
+}
+ol.flow-strip > li {
+  counter-increment: flow;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  background: var(--surface);
+  padding: 0.85rem 0.9rem;
+  font-size: 0.92rem;
+}
+ol.flow-strip > li::before {
+  content: counter(flow);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-bottom: 0.4rem;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  color: var(--navy);
+  background: var(--gold);
+  border-radius: 50%;
+}
+@media (max-width: 760px) {
+  ol.flow-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 420px) {
+  ol.flow-strip { grid-template-columns: 1fr; }
+}
+
+/* Forms. */
+.form { margin: 1.25rem 0 1.5rem; }
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+.field { display: flex; flex-direction: column; }
+.field.full { grid-column: 1 / -1; }
+.field label {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--heading);
+  margin-bottom: 0.3rem;
+}
+.field .req { color: var(--gold-dark); }
+.field .hint {
+  font-family: Arial, sans-serif;
+  font-weight: normal;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-left: 0.4rem;
+}
+.field input,
+.field select,
+.field textarea {
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.6rem 0.7rem;
+}
+.field textarea { min-height: 8rem; resize: vertical; }
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--edge);
+}
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.submit-btn {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  color: var(--navy);
+  background: var(--gold);
+  border: 1px solid var(--gold-dark);
+  border-radius: 3px;
+  padding: 0.8rem 1.6rem;
+  margin-top: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.submit-btn:hover { background: var(--gold-dark); transform: translateY(-1px); }
+.submit-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+@media (max-width: 560px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+/* Form status / turnstile slot. */
+.form-status {
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: 3px;
+  font-size: 0.95rem;
+}
+.form-status[data-state="success"] {
+  background: rgba(250,191,18,0.10);
+  border: 1px solid var(--gold);
+  color: var(--text);
+}
+.form-status[data-state="error"] {
+  background: rgba(176,0,32,0.08);
+  border: 1px solid #B00020;
+  color: var(--text);
+}
+.turnstile-slot { margin-top: 1rem; }
+
+/* Note / small print callout. */
+.note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  border-left: 3px solid var(--line);
+  padding: 0.4rem 0 0.4rem 0.9rem;
+  margin: 1.25rem 0;
+}
+
+/* Contact layout: form + sidebar. */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+.contact-sidebar {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--edge);
+  background: var(--surface);
+  padding: 1.1rem 1.2rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.contact-sidebar .org { font-family: 'Trebuchet MS', Arial, sans-serif; font-weight: bold; color: var(--heading); }
+@media (max-width: 720px) {
+  .contact-layout { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   Division doors: the parent front page and the Forensic door
+   present their divisions as two large lifted cards. Same .card
+   component, sized up and carrying the division emblem.
+   ============================================================ */
+.cards--doors {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin: 1.5rem 0 2rem;
+}
+/* The doors are equal-height whatever the copy length, so the entry cues
+   align across the row. */
+.cards--doors > li { display: flex; }
+.card--door {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.7rem 1.4rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px rgba(15, 36, 82, 0.14);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.card--door:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 36, 82, 0.24);
+  text-decoration: none;
+}
+.card--door .door-emblem {
+  width: 76px;
+  height: auto;
+  margin-bottom: 0.9rem;
+}
+.card--door h3 {
+  font-size: 1.22rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.6rem;
+  text-wrap: balance;
+}
+/* A door whose title is the division spelled out in full carries more
+   characters than a one-word title, so it steps down a size and tightens its
+   tracking to hold the same optical weight as its facing door. Uppercase
+   Trebuchet at this size still reads larger than the body copy beneath it, so
+   the heading hierarchy holds. The doors stay a two-up row: only the type
+   scale changes, never the grid. */
+.card--door h3.title-spelled {
+  font-size: clamp(0.76rem, 3.9vw, 0.96rem);
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+}
+.card--door p {
+  text-align: center;
+  margin-bottom: 0.9rem;
+}
+.card--door .door-cue {
+  margin-top: auto;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--link);
+  text-decoration: underline;
+}
+/* The PCA/FCA door carries the division green wherever it appears, including
+   on the parent page, which is otherwise gold-accented. */
+.card--door-pca { border-top-color: var(--green); }
+@media (prefers-color-scheme: dark) {
+  .card--door-pca { border-top-color: var(--green-light); }
+}
+@media (max-width: 640px) {
+  .cards--doors { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   PCA/FCA division scope. The parent chrome structure is
+   identical; only the accent token flips from gold to the
+   division green. Nothing here duplicates a parent rule: the
+   tokens are re-pinned and the handful of cases where the deep
+   green cannot meet contrast are named explicitly below.
+   ============================================================ */
+body.division-pca {
+  --gold: var(--green);
+  --gold-dark: var(--green-dark);
+  --edge: var(--green);
+}
+
+/* On navy, the division green measures 1.36:1 and would be invisible. The
+   ribbon rule and the hero borders therefore carry white, which is a PCA/FCA
+   register colour and measures 15.06:1 on navy. Geometry is unchanged: the
+   rule still sits INSIDE the navy, never as a detached band. */
+body.division-pca .masthead::after,
+body.division-pca .site-footer::before {
+  background: var(--paper);
+}
+body.division-pca .hero {
+  border-top-color: var(--paper);
+  border-bottom-color: var(--paper);
+}
+
+/* Accent fills carry white text: navy on the deep green measures 1.36:1,
+   white measures 11.05:1. */
+body.division-pca .btn-primary,
+body.division-pca .submit-btn,
+body.division-pca ol.steps > li::before,
+body.division-pca .verify-badge {
+  color: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+  /* The deep green measures 1.30:1 on the dark surface, so the division accent
+     is pinned to its light tint for dark mode, exactly as the parent pins its
+     accents. Gold must never appear on this page, so the dark-mode link, edge
+     and focus pins are overridden too. */
+  body.division-pca {
+    --gold: var(--green-light);
+    --gold-dark: #4E9E5F;
+    --edge: var(--green-light);
+    --link: var(--green-light);
+    --focus: var(--green-light);
+  }
+  /* Against the light green tint, navy text measures 6.71:1 and reads better
+     than white. */
+  body.division-pca .btn-primary,
+  body.division-pca .submit-btn,
+  body.division-pca ol.steps > li::before,
+  body.division-pca .verify-badge {
+    color: var(--navy);
+  }
+}
