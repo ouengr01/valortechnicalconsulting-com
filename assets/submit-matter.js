@@ -72,11 +72,27 @@ const TURNSTILE_SITE_KEY = "";
   const OPTIONAL_FIELDS = [
     "phone", "company", "referral_source",
     "incident_state", "incident_city",
-    "submitter_role", "other_note",
+    "submitter_role", "submitter_role_other",
     "property_name", "property_street", "property_city",
     "property_state", "property_zip",
     "type_of_occurrence", "date_of_occurrence"
   ];
+
+  // The spine types `date_of_occurrence` as a real date and rejects the whole
+  // submission (422) on anything it cannot parse. The field is shown in the
+  // firm's MM.DD.YYYY convention, so convert to the ISO YYYY-MM-DD the spine
+  // wants. Anything unrecognizable is DROPPED, never sent: an approximate date
+  // must not be able to bounce a legitimate matter.
+  function toIsoDate(raw) {
+    const v = (raw || "").trim();
+    if (!v) return "";
+    let m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m) return m[1] + "-" + pad2(m[2]) + "-" + pad2(m[3]);
+    m = v.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+    if (m) return m[3] + "-" + pad2(m[1]) + "-" + pad2(m[2]);
+    return "";
+  }
+  function pad2(n) { return String(n).length < 2 ? "0" + n : String(n); }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -96,6 +112,23 @@ const TURNSTILE_SITE_KEY = "";
       const v = (fd.get(name) || "").trim();
       if (v) payload[name] = v;
     });
+
+    // Date of occurrence: normalize MM.DD.YYYY to ISO, or omit it entirely.
+    if (payload.date_of_occurrence) {
+      const iso = toIsoDate(payload.date_of_occurrence);
+      if (iso) {
+        payload.date_of_occurrence = iso;
+      } else {
+        // Keep what they typed — in the description, where free text belongs —
+        // rather than losing it or failing the submission.
+        delete payload.date_of_occurrence;
+        const typed = (fd.get("date_of_occurrence") || "").trim();
+        if (typed) {
+          payload.description = payload.description +
+            "\n\nDate the damage occurred, as entered: " + typed;
+        }
+      }
+    }
 
     // Division: sent as its own key (future spine contract field), and carried
     // as a labeled first line of the description so it reaches the referral
