@@ -69,6 +69,7 @@
     <li>We may send you a secure link for documents.</li>
   </ol>
   <p class="note">This form is for new matters. There is no file upload here by design: if documents are needed, we email you a secure link to upload them. Submitting this form does not form an engagement.</p>
+  <p class="note" id="consult-return" hidden></p>
 
   <form id="matter-form" class="form" novalidate>
     <!-- Honeypot: hidden from people, tempting to bots. Sent empty. -->
@@ -130,10 +131,13 @@
           <option value="Forensic Engineering">Forensic Engineering</option>
           <option value="Forensic Meteorology">Forensic Meteorology</option>
           <option value="PCA/FCA">Property Condition Assessments/Facility Condition Assessments</option>
+          <option value="Rapid Consult">Rapid Consult / Screening Assessment (base consult, up to 45 minutes)</option>
         </select>
+        <span class="hint" id="division-hint" hidden>A Rapid Consult is a retained base consult &mdash; up to 45 minutes plus a file review &mdash; to help you understand your situation short of full site work. It does not produce a written report or opinion.</span>
       </div>
       <div class="field full">
-        <label for="description">Tell us what happened <span class="req" aria-hidden="true">*</span> <span class="hint">10&ndash;4000 characters</span></label>
+        <label for="description" id="description-label">Tell us what happened <span class="req" aria-hidden="true">*</span> <span class="hint">10&ndash;4000 characters</span></label>
+        <label for="description" id="narrative-label" hidden>Your narrative <span class="hint">optional &mdash; <strong>embargoed</strong>: not visible to Valor until your consult is accepted; permanently deleted if we decline</span></label>
         <textarea id="description" name="description" minlength="10" maxlength="4000" required></textarea>
       </div>
       <div class="field">
@@ -178,6 +182,77 @@
       </div>
     </div>
 
+    <!-- ===== Rapid Consult branch (shown when Division = Rapid Consult) ===== -->
+    <section id="consult-section" class="consult-section" hidden aria-labelledby="consult-heading">
+      <h2 id="consult-heading">Rapid Consult Details</h2>
+      <p class="note consult-note">
+        <strong>What Valor sees before accepting.</strong> Only the basic information on this form &mdash; names, address,
+        loss location, type of loss and date of loss &mdash; is visible to Valor when we decide whether to accept your request.
+        Any documents, narrative or other information you provide is <strong>fully embargoed</strong> and cannot be viewed by
+        anyone at Valor until your matter is accepted and scheduled. If we decline, that embargoed material is permanently deleted.
+      </p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="consult_audience">I am a <span class="req" aria-hidden="true">*</span></label>
+          <select id="consult_audience" name="consult_audience">
+            <option value="property_owner">Property owner</option>
+            <option value="attorney">Attorney</option>
+            <option value="public_adjuster">Public adjuster</option>
+            <option value="carrier">Carrier / staff adjuster</option>
+            <option value="contractor">Contractor</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fee</label>
+          <div class="hint" id="consult-price" style="margin-top:0.35rem">$495 &mdash; base consult (up to 45 minutes) plus file review. Authorized now, charged only if accepted.</div>
+        </div>
+        <div class="field full">
+          <label for="claim_stage">Where the claim stands</label>
+          <select id="claim_stage" name="claim_stage">
+            <option value="unknown">Not sure / prefer not to say</option>
+            <option value="none">No claim filed yet</option>
+            <option value="claim_filed">Claim filed &mdash; being adjusted</option>
+            <option value="appraisal">Appraisal</option>
+            <option value="pre_suit">Pre-suit</option>
+            <option value="litigation">In litigation</option>
+          </select>
+        </div>
+      </div>
+
+      <h3>Involved parties <span class="req" aria-hidden="true">*</span></h3>
+      <p class="hint">List everyone involved besides yourself &mdash; the property owner, the insurance carrier, adjusters, public adjusters, attorneys, contractors. Valor runs a conflict check on these names before scheduling. Names only; no documents here.</p>
+      <div id="parties"></div>
+      <button type="button" class="link-btn" id="add-party">+ Add another party</button>
+
+      <h3>Requested time</h3>
+      <p class="hint">Pick a time that works. This is a <strong>request</strong> &mdash; we confirm it when we accept. If none of these work, choose &ldquo;Ask Valor to propose a time.&rdquo;</p>
+      <div class="form-grid">
+        <div class="field full">
+          <label for="requested_slot_id">First choice</label>
+          <select id="requested_slot_id" name="requested_slot_id"><option value="">Loading available times&hellip;</option></select>
+        </div>
+        <div class="field full">
+          <label for="requested_slot_alt_id">Second choice (optional)</label>
+          <select id="requested_slot_alt_id" name="requested_slot_alt_id"><option value="">&mdash;</option></select>
+        </div>
+      </div>
+
+      <h3>Payment and scope</h3>
+      <p class="note consult-note">
+        <strong>Payment.</strong> Your card is authorized when you request a consult and only charged when we accept &mdash;
+        like a hold at a gas pump. If we decline, the authorization is released and no charge is made. After you submit this
+        form you will be taken to our secure payment page.<br><br>
+        <strong>Scope.</strong> A Rapid Consult is a base consult &mdash; up to 45 minutes plus a file review &mdash; a
+        limited-scope conversation. It does not produce a written report, findings or an engineering opinion. If the matter
+        converts to a full evaluation within 30 days, 50% of the consult fee is credited against it.<br><br>
+        <strong>Conflicts.</strong> Valor runs a conflict check before scheduling. A conflict may mean we cannot take the
+        consult; the appointment time you select is a request and is confirmed on acceptance.
+      </p>
+      <label class="check"><input type="checkbox" id="accepts_scope" name="accepts_scope"> I understand a Rapid Consult is a conversation only and does not produce a written report or opinion.</label>
+      <label class="check"><input type="checkbox" id="accepts_embargo_terms" name="accepts_embargo_terms"> I understand my card is authorized now and charged only if Valor accepts; my narrative and documents are embargoed until then and deleted if declined.</label>
+    </section>
+
     <div class="turnstile-slot"></div>
 
     <button type="submit" class="submit-btn">Submit a Matter</button>
@@ -197,6 +272,39 @@
     </div>
   </div>
 </footer>
+<template id="party-row-tpl">
+  <div class="party-row form-grid">
+    <div class="field">
+      <label>Name <span class="req" aria-hidden="true">*</span></label>
+      <input type="text" data-party="name" maxlength="200" placeholder="Person or company">
+    </div>
+    <div class="field">
+      <label>Organization</label>
+      <input type="text" data-party="organisation" maxlength="200" placeholder="Firm / carrier (optional)">
+    </div>
+    <div class="field">
+      <label>Role</label>
+      <select data-party="role">
+        <option value="owner">Property owner</option>
+        <option value="carrier">Insurance carrier</option>
+        <option value="adjuster">Adjuster</option>
+        <option value="public_adjuster">Public adjuster</option>
+        <option value="attorney">Attorney / law firm</option>
+        <option value="contractor">Contractor</option>
+        <option value="other" selected>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Relative to you</label>
+      <select data-party="side">
+        <option value="opposing">Other side</option>
+        <option value="submitter">My side</option>
+        <option value="neutral" selected>Neutral / not sure</option>
+      </select>
+    </div>
+    <button type="button" class="link-btn remove-party" aria-label="Remove this party">Remove</button>
+  </div>
+</template>
 <script src="assets/submit-matter.js"></script>
 </body>
 </html>
